@@ -148,6 +148,23 @@ To build this Docker image locally from the project root directory, run:
 docker build -t your-dockerhub-username/nodejs-shopping:latest -f Dockerfiles/Dockerfile ./Dockerfiles
 ```
 
+#### Step 1.1: Local Testing with Docker Compose
+To test the entire multi-container setup (Node.js app + MongoDB database) locally on your system:
+
+**Run the stack:**
+```bash
+docker-compose up -d --build
+```
+This command will build the frontend/backend application, download the MongoDB image, set up the database authentication credentials, configure shared storage volumes, and start both containers in a bridge network.
+* **App URL**: [http://localhost:3000](http://localhost:3000)
+* **Database Port**: `27017`
+
+**Stop the stack:**
+```bash
+docker-compose down -v
+```
+*(The `-v` flag removes the database volume if you want to perform a clean reset).*
+
 #### Step 2: Write Kubernetes Manifests
 Create a `k8s/` folder in the root of your repo to hold the Kubernetes resources:
 * **MongoDB Manifests (`k8s/mongodb.yaml`)**:
