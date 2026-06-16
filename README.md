@@ -114,27 +114,26 @@ graph TD
 This project is prepared for DevOps integration. Below is the blueprint of files and steps to implement the GitOps workflow.
 
 #### Step 1: Dockerize the Application
-Create a `Dockerfile` and `.dockerignore` in the root of the project:
+The Docker configurations are located in the `Dockerfiles/` directory.
 
-**`Dockerfile` Example:**
+**`Dockerfiles/Dockerfile`:**
 ```dockerfile
-# Stage 1: Build dependencies
-FROM node:14-alpine AS builder
+FROM node:alpine AS builder
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci --only=production
 
-# Stage 2: Run application
-FROM node:14-alpine
+FROM node:alpine
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY . .
+RUN mkdir -p images
 EXPOSE 3000
 ENV PORT=3000
-CMD ["node", "app.js"]
+CMD ["node","app.js"]
 ```
 
-**`.dockerignore` Example:**
+**`Dockerfiles/.dockerignore`:**
 ```text
 node_modules
 npm-debug.log
@@ -142,6 +141,11 @@ npm-debug.log
 .github
 Dockerfile
 .dockerignore
+```
+
+To build this Docker image locally from the project root directory, run:
+```bash
+docker build -t your-dockerhub-username/nodejs-shopping:latest -f Dockerfiles/Dockerfile ./Dockerfiles
 ```
 
 #### Step 2: Write Kubernetes Manifests
@@ -184,7 +188,8 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./Dockerfiles
+          file: ./Dockerfiles/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-shopping:latest
