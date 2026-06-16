@@ -1,7 +1,7 @@
 {
-  "name": "nodejs-shopping",
+  "name": "argocd-gitops-pipeline.git",
   "version": "1.0.0",
-  "description": "Node.js online shopping application",
+  "description": "Node.js online shopping application with complete devops practice",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gaetanBloch/nodejs-shopping.git"
+    "url": "https://github.com/HarshavardhanBhosale/argocd-gitops-pipeline.git"
   },
-  "author": "Gaëtan Bloch",
+  "author": "Harshavardhan Bhosale",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/gaetanBloch/nodejs-shopping/issues"
+    "url": "https://github.com/HarshavardhanBhosale/argocd-gitops-pipeline.git"
   },
-  "homepage": "https://github.com/gaetanBloch/nodejs-shopping#readme",
+  "homepage": "https://github.com/HarshavardhanBhosale/readme.md",
   "devDependencies": {
     "nodemon": "^2.0.4"
   },
