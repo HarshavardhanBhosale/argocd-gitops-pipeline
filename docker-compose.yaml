@@ -1,0 +1,33 @@
+name: my-shoping-compose
+
+services:
+   db:
+     container_name: myshoping-mongo-db
+     image: mongo:latest
+     ports:
+      - "27017:27017"
+     volumes:
+      - shop-vol:/var/lib/mongodb
+     networks: 
+        - shop-net
+     environment:
+      - MONGO_INITDB_ROOT_USERNAME=harsh
+      - MONGO_INITDB_ROOT_PASSWORD=harsh123
+   app:
+     container_name: myshoping-app
+     build:
+        context: ./Dockerfiles
+     ports: 
+       - "3000:3000"
+     networks:
+        - shop-net
+     environment:
+       - MONGODB_URI=mongodb://harsh:harsh123@myshoping-mongo-db:27017/shop?authSource=admin
+     depends_on: 
+         - db
+
+volumes:
+    shop-vol:
+networks:
+    shop-net:
+      driver: bridge
