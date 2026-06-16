@@ -179,14 +179,14 @@ Create a `k8s/` folder in the root of your repo to hold the Kubernetes resources
   * Store credentials safely using Kubernetes Secrets.
 
 #### Step 3: Implement Continuous Integration (CI) with GitHub Actions
-Create a file at `.github/workflows/ci.yml` in your repository:
+The workflow is defined at [ci.yaml](file:///.github/workflows/ci.yaml):
+
 ```yaml
-name: Build and Push Docker Image
+name: Build and Push Docker Image to DockerHub
 
 on:
   push:
     branches:
-      - master
       - main
 
 jobs:
@@ -199,8 +199,8 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
@@ -209,10 +209,16 @@ jobs:
           file: ./Dockerfiles/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-shopping:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-shopping:${{ github.sha }}
+            ${{ vars.DOCKER_USERNAME }}/nodejs-cicd-shopping:latest
+            ${{ vars.DOCKER_USERNAME }}/nodejs-cicd-shopping:${{ github.sha }}
 ```
-*Note: Make sure to add `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets under GitHub Repository Settings -> Secrets and variables -> Actions.*
+
+##### CI Pipeline In Action:
+Here is a screenshot of the successful GitHub Actions run building and pushing the Docker image:
+
+![GitHub Actions CI Pipeline](screenshots/github-ci.png)
+
+*Note: Make sure to add `DOCKER_USERNAME` as a Repository Variable and `DOCKER_PASSWORD` as a Secret under your GitHub Repository Settings (Settings -> Secrets and variables -> Actions).*
 
 #### Step 4: Install and Configure Argo CD (CD)
 1. **Install Argo CD** on your K3s/Minikube cluster:
