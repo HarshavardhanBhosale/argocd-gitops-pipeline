@@ -1,0 +1,29 @@
+name: Build and Push Docker Image to DockerHub
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./Dockerfiles
+          file: ./Dockerfiles/Dockerfile
+          push: true
+          tags: |
+            ${{ vars.DOCKER_USERNAME }}/nodejs-cicd-shopping:latest
+            ${{ secrets.DOCKER_PASSWORD }}/nodejs-cicd-shopping:${{ github.sha }}
