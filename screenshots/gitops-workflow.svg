@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" width="100%" height="100%">
-  <!-- Definitions & Filters -->
+  <!-- Definitions and Filters -->
   <defs>
     <!-- Background Gradient -->
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -55,7 +55,7 @@
   </defs>
 
   <style>
-    /* Styling & Keyframes */
+    /* Styling and Keyframes */
     .bg-canvas {
       fill: url(#bgGrad);
       stroke: #1e293b;
@@ -116,7 +116,7 @@
       animation: pulseOrange 3s infinite ease-in-out;
     }
 
-    /* Labels & Fonts */
+    /* Labels and Fonts */
     .txt-title {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 14px;
