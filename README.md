@@ -1,6 +1,6 @@
 # ArgoCD GitOps Pipeline (argocd-gitops-pipeline)
 
-[![Build and Push Docker Image to DockerHub](https://github.com/harshbhosale8888/argocd-gitops-pipeline/actions/workflows/ci.yaml/badge.svg)](https://github.com/harshbhosale8888/argocd-gitops-pipeline/actions)
+[![Build and Push Docker Image to DockerHub](https://github.com/HarshavardhanBhosale/argocd-gitops-pipeline/actions/workflows/ci.yaml/badge.svg)](https://github.com/HarshavardhanBhosale/argocd-gitops-pipeline/actions)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.28+-blue?logo=kubernetes)](https://kubernetes.io)
 [![ArgoCD](https://img.shields.io/badge/Argo%20CD-GitOps-orange?logo=argo)](https://argoproj.github.io/argo-cd/)
 
@@ -66,7 +66,9 @@ docker-compose down -v
 The Kubernetes manifests inside the [k8s-specification](file:///k8s-specification/) folder define the production environment:
 
 1. **Dedicated Namespace (`namespace.yaml`)**: Places all resources inside the isolated `shopping-app` namespace.
-2. **Storage Provisioning (`local-storageclass.yaml` & `setup-storage.sh`)**: Sets up a default `StorageClass` targeting the Rancher local-path provisioner for dynamic volume binding.
+2. **Storage Provisioning (`local-storageclass.yaml` & `setup-storage.sh`)**:
+   * Defines a default `StorageClass` named `local-path-default` mapped to the Rancher local-path provisioner for dynamic volume binding.
+   * Includes a helper shell script `setup-storage.sh` designed to be executed on the host node with `sudo` permissions. It initializes the `/opt/local-path-provisioner` directory structure and grants full read/write permissions (`chmod 777`) to avoid file access errors or locks when MongoDB mounts its storage volume.
 3. **Database StatefulSet (`mongo-statefullset.yaml`, `mongo-headless-svc.yaml`)**:
    * Uses a **StatefulSet** instead of a Deployment to ensure stable network identifiers and persistent database storage volume claims (`1Gi`).
    * Configured with Argo CD **Sync Wave 1** to guarantee that the database starts before the application container initialization begins.
