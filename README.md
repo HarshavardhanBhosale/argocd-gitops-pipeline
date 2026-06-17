@@ -1,214 +1,96 @@
-# Online Shopping Application
+# ArgoCD GitOps Pipeline (argocd-gitops-pipeline)
 
-This application was built using [Node.js 14](https://nodejs.org/en/), [Express](https://expressjs.com/), [EJS Template Engine](https://ejs.co/), [Stripe](https://stripe.com/fr), [PDFKit](https://pdfkit.org/), [Mongoose ORM](https://mongoosejs.com/) and [MongoDB](https://www.mongodb.com/) for persistence. It consists on an online shopping application.
+[![Build and Push Docker Image to DockerHub](https://github.com/harshbhosale8888/argocd-gitops-pipeline/actions/workflows/ci.yaml/badge.svg)](https://github.com/harshbhosale8888/argocd-gitops-pipeline/actions)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.28+-blue?logo=kubernetes)](https://kubernetes.io)
+[![ArgoCD](https://img.shields.io/badge/Argo%20CD-GitOps-orange?logo=argo)](https://argoproj.github.io/argo-cd/)
 
-**The application was deployed on AWS Beanstalk, to access it, click [here](http://nodeshopping-env.eba-czedjv9y.eu-west-2.elasticbeanstalk.com/).**
-
-## Running Application Process on your computer
-
-1. Download the application by Clicking [this link](https://github.com/gaetanBloch/nodejs-shopping/archive/master.zip)
-2. Unzip the application
-3. Download and Install [node.js](https://nodejs.org/en/download/) 
-4. Open a terminal
-5. Move to the root of the application
-6. Run `npm install`
-7. Run `npm start`
-8. Visit the website http://localhost:3000/ on your favourite browser
-
-## Application
-
-### Signup
-
-![Signup](https://i.imgur.com/ugZY2Dr.png)
-
-### Login
-
-![Login](https://i.imgur.com/OWAsmFf.png)
-
-### Reset Password
-
-![Reset Password](https://i.imgur.com/GIJbq4B.png)
-
-### Shopping List
-
-![Shopping List](https://i.imgur.com/ygCs5Iq.png)
-
-### Shopping List Pagination
-
-![Shopping List Pagination](https://i.imgur.com/vVH8HXW.png)
-
-### Responsive Shopping List
-
-![Responsive1](https://i.imgur.com/irFtMIB.png)
-![Responsive2](https://i.imgur.com/P7FploU.png)
-
-### Add Product
-
-![Add Product](https://i.imgur.com/dyHFrnJ.png)
-
-### Shopping List Admin
-
-![Shoppîng List Admin](https://i.imgur.com/N4vRGph.png)
-
-### Edit Product
-
-![Edit Product](https://i.imgur.com/XTbXF2E.png)
-
-### Cart Summary
-
-![Cart](https://i.imgur.com/TXY9vq7.png)
-
-### Cart Checkout
-
-![Cart Checkout](https://i.imgur.com/qU3vKw2.png)
-
-### Order Payment
-
-![Order Payment](https://imgur.com/kRL5YU1.png)
-
-### Passed Orders Summary
-
-![Orders Summary](https://imgur.com/9VJR4Xc.png)
-
-### Order invoice
-
-![Order invoice](https://imgur.com/b8pqelC.png)
+This repository implements an automated end-to-end GitOps continuous delivery pipeline. It containerizes a multi-tier Node.js online shopping application and deploys it dynamically to a Kubernetes cluster using GitHub Actions for Continuous Integration (CI) and Argo CD coupled with Argo CD Image Updater for Continuous Deployment (CD).
 
 ---
 
-## DevOps & GitOps Architecture (ArgoCD & Kubernetes)
+## 1. System Architecture & Component Analysis
 
-### 1. Application Architecture Analysis
-* **Tier Architecture**: **2-Tier Monolithic Application**
-  * **Frontend & Backend (Tier 1)**: Built as a single Express.js application serving dynamic EJS views (Server-Side Rendering) combined with backend API routing and business logic.
-    * **Port**: **`3000`** (runs by default on port 3000, customizable via `PORT` environment variable).
-  * **Database (Tier 2)**: Uses **MongoDB** for persistence and session management.
-    * **Port**: **`27017`** (default MongoDB port).
+The application is architected as a highly available, containerized **2-Tier Monolithic System**:
 
-### 2. DevOps & GitOps End-to-End Workflow Flow
-The diagram below illustrates the general workflow of the automated GitOps pipeline:
+* **Presentation & Application Layer (Tier 1)**: 
+  * Built using **Node.js 14**, **Express**, and the **EJS Template Engine** for Server-Side Rendering (SSR).
+  * Exposes the web interface and handles routing, authentication, dynamic invoice generation (via PDFKit), and payment processing integrations (Stripe).
+  * **Network Port**: Configured to run on container port **`3000`** (customizable via `PORT` environment variable).
+* **Data Persistence Layer (Tier 2)**: 
+  * Uses **MongoDB** and **Mongoose ORM** to store user information, session data, and catalog products.
+  * **Network Port**: Communicates on port **`27017`**.
+
+---
+
+## 2. CI/CD & GitOps Workflow
+
+The deployment state is managed entirely through Git. Whenever a change is committed, the following automated pipeline executes:
 
 ```mermaid
 graph TD
-    Dev[Developer] -->|1. Commit & Push Code| GitHub[GitHub Repo]
+    Dev[Developer] -->|1. Git Push Code| GitHub[GitHub Repo]
     
     subgraph CI: GitHub Actions
         GitHub -->|2. Trigger Build| GHA[GitHub Actions Runner]
-        GHA -->|3. Docker Build & Tag| DockerBuild[Docker Build]
-        DockerBuild -->|4. Push Image| DockerHub[Docker Hub Registry]
+        GHA -->|3. Multi-stage Docker Build| DockerBuild[Docker Build]
+        DockerBuild -->|4. Push Tagged Image| DockerHub[Docker Hub Registry]
     end
     
-    subgraph CD: Argo CD & K8s
-        DockerHub -->|5. Detects New Image Tag| ArgoImageUpdater[Argo CD Image Updater]
-        ArgoImageUpdater -->|6. Auto-updates Deployment Manifest| ArgoCD[Argo CD Server]
-        ArgoCD -->|7. Auto-sync State| K8s[Kubernetes Cluster: Minikube/K3s]
-        K8s -->|8. Run App Pods| NodeShopping[NodeJS App Pod port 3000]
-        K8s -->|8. Run DB Pod| MongoPod[MongoDB Pod port 27017]
+    subgraph CD: GitOps with ArgoCD & K8s
+        DockerHub -->|5. Track & Detect New Tag| ArgoImageUpdater[Argo CD Image Updater]
+        ArgoImageUpdater -->|6. Auto-Update Image Tag| ArgoCD[Argo CD Server]
+        ArgoCD -->|7. Reconcile & Synchronize State| K8s[Kubernetes Cluster: Minikube/K3s]
+        K8s -->|8. Expose Web Service Port 30080| NodeShopping[NodeJS App Pods]
+        K8s -->|8. Manage Data Persistence| MongoPod[MongoDB StatefulSet]
     end
 ```
 
 ---
 
-### 3. Step-by-Step DevOps Implementation Guide
+## 3. Infrastructure as Code (IaC) & Orchestration
 
-This project is prepared for DevOps integration. Below is the blueprint of files and steps to implement the GitOps workflow.
+The project provides configurations to launch the stack locally or deploy it to a production Kubernetes environment.
 
-#### Step 1: Dockerize the Application
-The Docker configurations are located in the `Dockerfiles/` directory.
+### Local Development Orchestration (Docker Compose)
+A multi-container Docker Compose environment is defined in [docker-compose.yaml](file:///docker-compose.yaml) to run the system locally for development and testing.
 
-**`Dockerfiles/Dockerfile`:**
-```dockerfile
-FROM node:alpine AS builder
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm ci --only=production
-
-FROM node:alpine
-WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY . .
-RUN mkdir -p images
-EXPOSE 3000
-ENV PORT=3000
-CMD ["node","app.js"]
-```
-
-**`Dockerfiles/.dockerignore`:**
-```text
-node_modules
-npm-debug.log
-.git
-.github
-Dockerfile
-.dockerignore
-```
-
-To build this Docker image locally from the project root directory, run:
 ```bash
-docker build -t your-dockerhub-username/nodejs-shopping:latest -f Dockerfiles/Dockerfile ./Dockerfiles
-```
-
-#### Step 1.1: Local Testing with Docker Compose
-To test the entire multi-container setup (Node.js app + MongoDB database) locally on your system:
-
-**Run the stack:**
-```bash
+# Start the entire stack in detached mode
 docker-compose up -d --build
-```
-This command will build the frontend/backend application, download the MongoDB image, set up the database authentication credentials, configure shared storage volumes, and start both containers in a bridge network.
-* **App URL**: [http://localhost:3000](http://localhost:3000)
-* **Database Port**: `27017`
 
-**Stop the stack:**
-```bash
+# Stop the stack and purge data volumes
 docker-compose down -v
 ```
-*(The `-v` flag removes the database volume if you want to perform a clean reset).*
 
-#### Step 2: Deploy Kubernetes Manifests (`k8s-specification/`)
-The Kubernetes manifests are organized inside the [k8s-specification](file:///k8s-specification/) folder:
+### Production Deployment Manifests (`k8s-specification/`)
+The Kubernetes manifests inside the [k8s-specification](file:///k8s-specification/) folder define the production environment:
 
-1. **Namespace Configuration (`namespace.yaml`)**: Creates a dedicated namespace named `shopping-app`.
-2. **Local Storage Setup (`local-storageclass.yaml` & `setup-storage.sh`)**: Defines a default StorageClass named `local-path-default` mapped to the Rancher local-path provisioner for dynamic volume binding.
-3. **MongoDB State Persistence (`mongo-statefullset.yaml`, `mongo-headless-svc.yaml`, `mongo-configmap.yaml`, & `mongo-secret.yaml`)**:
-   * Uses a **StatefulSet** (`kind: StatefulSet`) instead of a basic deployment to maintain persistent data volumes for MongoDB.
-   * Maps ConfigMaps and Secrets for root database authentication credentials (`MONGO_INITDB_ROOT_USERNAME` and `MONGO_INITDB_ROOT_PASSWORD`).
-   * Configures an Argo CD sync-wave annotation of `"1"` to ensure database instances launch first.
-4. **Node.js Web App Deployment (`shop-deployment.yaml`, `shop-service.yaml`, & `shop-configmap.yaml`)**:
-   * Configures a Deployment running 4 replicas of `harshavardhan88/nodejs-cicd-shopping`.
-   * Integrates an **`initContainer`** (`wait-for-mongo`) that tests connection to `mongo.shopping-app.svc.cluster.local:27017` before launching the main app container.
-   * Configures an Argo CD sync-wave annotation of `"2"` to defer application deployment until database readiness.
-   * Exposes the web UI via a **NodePort Service** on port `30080` (mapped to container port `3000`).
+1. **Dedicated Namespace (`namespace.yaml`)**: Places all resources inside the isolated `shopping-app` namespace.
+2. **Storage Provisioning (`local-storageclass.yaml` & `setup-storage.sh`)**: Sets up a default `StorageClass` targeting the Rancher local-path provisioner for dynamic volume binding.
+3. **Database StatefulSet (`mongo-statefullset.yaml`, `mongo-headless-svc.yaml`)**:
+   * Uses a **StatefulSet** instead of a Deployment to ensure stable network identifiers and persistent database storage volume claims (`1Gi`).
+   * Configured with Argo CD **Sync Wave 1** to guarantee that the database starts before the application container initialization begins.
+4. **App Service Deployment (`shop-deployment.yaml`, `shop-service.yaml`)**:
+   * Runs **4 replicas** of the application for high availability.
+   * Includes a **`initContainer`** (`wait-for-mongo`) that polls the MongoDB service, delaying application startup until the database is fully responsive.
+   * Configured with Argo CD **Sync Wave 2** to run only after the database sync wave completes.
+   * Exposes the web interface on port **`30080`** using a NodePort service.
 
-##### Active Kubernetes Resources Status:
-Below is the status of active Kubernetes pods, services, statefulsets, and storage classes running in the `shopping-app` namespace:
-
+#### Cluster Status Verification
+```bash
+kubectl get all -n shopping-app
+```
 ![Kubernetes Status](screenshots/k8s-resources.png)
 
-#### Step 3: Implement Continuous Integration (CI) with GitHub Actions
-The workflow is defined at [ci.yaml](file:///.github/workflows/ci.yaml):
+---
+
+## 4. Pipeline Configurations
+
+### Continuous Integration (GitHub Actions)
+The CI pipeline is defined at [.github/workflows/ci.yaml](file:///.github/workflows/ci.yaml). On every push to `main`, it logs into Docker Hub, builds the container using a multi-stage `Dockerfile`, and pushes the release image tagged with both `:latest` and the Git commit SHA.
 
 ```yaml
-name: Build and Push Docker Image to DockerHub
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ vars.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
+# Configuration snippet from ci.yaml
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
         with:
@@ -220,39 +102,47 @@ jobs:
             ${{ vars.DOCKER_USERNAME }}/nodejs-cicd-shopping:${{ github.sha }}
 ```
 
-##### CI Pipeline In Action:
-Here is a screenshot of the successful GitHub Actions run building and pushing the Docker image:
-
+#### CI Run Proof
 ![GitHub Actions CI Pipeline](screenshots/github-ci.png)
 
-*Note: Make sure to add `DOCKER_USERNAME` as a Repository Variable and `DOCKER_PASSWORD` as a Secret under your GitHub Repository Settings (Settings -> Secrets and variables -> Actions).*
+### Continuous Deployment & GitOps (Argo CD)
 
-#### Step 4: Install and Configure Argo CD (CD)
-1. **Install Argo CD** on your K3s/Minikube cluster:
-   ```bash
-   kubectl create namespace argocd
-   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-   ```
-2. **Access Argo CD API Server**:
-   Expose the service via Port-Forwarding:
-   ```bash
-   kubectl port-forward svc/argocd-server -n argocd 8080:443
-   ```
-3. **Register Git Repository & Create ArgoCD App**:
-   Define an Argo CD Application pointing to your GitHub repo and target the `k8s/` folder path. Enable **Auto-Sync** and **Prune Resources** options.
+#### 1. Argo CD Installation
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
 
-#### Step 5: Integrate Argo CD Image Updater
-1. **Install Argo CD Image Updater**:
-   ```bash
-   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/manifests/install.yaml
-   ```
-2. **Annotate your Argo CD Application** to enable image tracking:
-   ```yaml
-   metadata:
-     annotations:
-       argocd-image-updater.argoproj.io/write-back-method: git
-       argocd-image-updater.argoproj.io/image-list: my-app=your-dockerhub-username/nodejs-shopping
-       argocd-image-updater.argoproj.io/my-app.update-strategy: latest
-   ```
-   *Note: Using the `git` write-back method, Argo CD Image Updater will push a commit with the new image tag directly to your git repository (into a `.argocd-source.yaml` file), automating the entire GitOps lifecycle.*
+#### 2. Auto-Deployment & Promotion Configuration
+To enable the **Argo CD Image Updater** to automatically sync updates without manual manifest changes, annotate your Argo CD Application configuration:
 
+```yaml
+metadata:
+  name: shopping-app
+  namespace: argocd
+  annotations:
+    # Write updates back to Git repository
+    argocd-image-updater.argoproj.io/write-back-method: git
+    # Target Docker image path
+    argocd-image-updater.argoproj.io/image-list: my-app=harshavardhan88/nodejs-cicd-shopping
+    # Update strategy (latest, semver, or digest)
+    argocd-image-updater.argoproj.io/my-app.update-strategy: latest
+```
+
+---
+
+## 5. Application Features Gallery
+
+Here is a visual overview of the operational frontend interface:
+
+| Signup | Login |
+|---|---|
+| ![Signup](https://i.imgur.com/ugZY2Dr.png) | ![Login](https://i.imgur.com/OWAsmFf.png) |
+
+| Shopping List Catalog | Responsive UI View |
+|---|---|
+| ![Shopping List](https://i.imgur.com/ygCs5Iq.png) | ![Responsive1](https://i.imgur.com/irFtMIB.png) |
+
+| Cart Summary | Checkout & Payment |
+|---|---|
+| ![Cart](https://i.imgur.com/TXY9vq7.png) | ![Cart Checkout](https://i.imgur.com/qU3vKw2.png) |
