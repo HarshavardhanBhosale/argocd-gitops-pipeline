@@ -26,24 +26,7 @@ The application is architected as a highly available, containerized **2-Tier Mon
 
 The deployment state is managed entirely through Git. Whenever a change is committed, the following automated pipeline executes:
 
-```mermaid
-graph TD
-    Dev[Developer] -->|1. Git Push Code| GitHub[GitHub Repo]
-    
-    subgraph CI: GitHub Actions
-        GitHub -->|2. Trigger Build| GHA[GitHub Actions Runner]
-        GHA -->|3. Multi-stage Docker Build| DockerBuild[Docker Build]
-        DockerBuild -->|4. Push Tagged Image| DockerHub[Docker Hub Registry]
-    end
-    
-    subgraph CD: GitOps with ArgoCD & K8s
-        DockerHub -->|5. Track & Detect New Tag| ArgoImageUpdater[Argo CD Image Updater]
-        ArgoImageUpdater -->|6. Auto-Update Image Tag| ArgoCD[Argo CD Server]
-        ArgoCD -->|7. Reconcile & Synchronize State| K8s[Kubernetes Cluster: Minikube/K3s]
-        K8s -->|8. Expose Web Service Port 30080| NodeShopping[NodeJS App Pods]
-        K8s -->|8. Manage Data Persistence| MongoPod[MongoDB StatefulSet]
-    end
-```
+![GitOps Workflow Diagram](screenshots/gitops-workflow.png)
 
 ---
 
