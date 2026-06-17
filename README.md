@@ -165,18 +165,25 @@ docker-compose down -v
 ```
 *(The `-v` flag removes the database volume if you want to perform a clean reset).*
 
-#### Step 2: Write Kubernetes Manifests
-Create a `k8s/` folder in the root of your repo to hold the Kubernetes resources:
-* **MongoDB Manifests (`k8s/mongodb.yaml`)**:
-  * Create a `Deployment` running image `mongo:4.4` and exposing port `27017`.
-  * Create a `ClusterIP` `Service` named `mongodb-service` pointing to port `27017`.
-  * Create a `PersistentVolumeClaim` (PVC) for persistent database storage.
-* **App Manifests (`k8s/app.yaml`)**:
-  * Create a `Deployment` running your custom image (e.g. `your-dockerhub-username/nodejs-shopping:latest`) and exposing container port `3000`.
-  * Inject database credentials via Environment Variables (`MONGO_USER`, `MONGO_PWD`, `MONGO_DB`) pointing to a Kubernetes `Secret`/`ConfigMap`.
-  * Create a `LoadBalancer` or `NodePort` `Service` (or `Ingress`) pointing to port `3000` to expose the UI.
-* **Secrets & ConfigMaps (`k8s/config.yaml`)**:
-  * Store credentials safely using Kubernetes Secrets.
+#### Step 2: Deploy Kubernetes Manifests (`k8s-specification/`)
+The Kubernetes manifests are organized inside the [k8s-specification](file:///k8s-specification/) folder:
+
+1. **Namespace Configuration (`namespace.yaml`)**: Creates a dedicated namespace named `shopping-app`.
+2. **Local Storage Setup (`local-storageclass.yaml` & `setup-storage.sh`)**: Defines a default StorageClass named `local-path-default` mapped to the Rancher local-path provisioner for dynamic volume binding.
+3. **MongoDB State Persistence (`mongo-statefullset.yaml`, `mongo-headless-svc.yaml`, `mongo-configmap.yaml`, & `mongo-secret.yaml`)**:
+   * Uses a **StatefulSet** (`kind: StatefulSet`) instead of a basic deployment to maintain persistent data volumes for MongoDB.
+   * Maps ConfigMaps and Secrets for root database authentication credentials (`MONGO_INITDB_ROOT_USERNAME` and `MONGO_INITDB_ROOT_PASSWORD`).
+   * Configures an Argo CD sync-wave annotation of `"1"` to ensure database instances launch first.
+4. **Node.js Web App Deployment (`shop-deployment.yaml`, `shop-service.yaml`, & `shop-configmap.yaml`)**:
+   * Configures a Deployment running 4 replicas of `harshavardhan88/nodejs-cicd-shopping`.
+   * Integrates an **`initContainer`** (`wait-for-mongo`) that tests connection to `mongo.shopping-app.svc.cluster.local:27017` before launching the main app container.
+   * Configures an Argo CD sync-wave annotation of `"2"` to defer application deployment until database readiness.
+   * Exposes the web UI via a **NodePort Service** on port `30080` (mapped to container port `3000`).
+
+##### Active Kubernetes Resources Status:
+Below is the status of active Kubernetes pods, services, statefulsets, and storage classes running in the `shopping-app` namespace:
+
+![Kubernetes Status](screenshots/k8s-resources.png)
 
 #### Step 3: Implement Continuous Integration (CI) with GitHub Actions
 The workflow is defined at [ci.yaml](file:///.github/workflows/ci.yaml):
