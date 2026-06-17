@@ -1,266 +1,344 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 400" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" width="100%" height="100%">
+  <!-- Definitions & Filters -->
   <defs>
     <!-- Background Gradient -->
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0a0f1d" />
-      <stop offset="100%" stop-color="#070a14" />
+      <stop offset="0%" stop-color="#0b0f19" />
+      <stop offset="50%" stop-color="#080c14" />
+      <stop offset="100%" stop-color="#05070a" />
     </linearGradient>
 
-    <!-- Node Gradient (Active) -->
-    <linearGradient id="nodeActiveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#1f293d" />
-      <stop offset="100%" stop-color="#111827" />
+    <!-- Glassmorphic Card Fill Gradients -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+    </linearGradient>
+    
+    <linearGradient id="activeCiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" />
+      <stop offset="100%" stop-color="#0072ff" />
     </linearGradient>
 
-    <!-- Glowing effects -->
-    <filter id="glowCyan" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="6" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
-    <filter id="glowOrange" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="6" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    <linearGradient id="activeCdGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7a00" />
+      <stop offset="100%" stop-color="#ff007a" />
+    </linearGradient>
+
+    <!-- Neon Glow Filters -->
+    <filter id="cyanGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
     </filter>
 
-    <!-- Marker Arrow -->
-    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#4b5563" />
-    </marker>
-    <marker id="arrowCyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#00f0ff" />
-    </marker>
-    <marker id="arrowOrange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#ff7a00" />
-    </marker>
+    <filter id="orangeGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+
+    <!-- Path Definitions for Animated Particles -->
+    <path id="pathDevToGit" d="M 160 200 L 220 200" />
+    <path id="pathGitToGha" d="M 360 200 Q 405 130 450 130" />
+    <path id="pathGhaToHub" d="M 590 130 L 670 130" />
+    <path id="pathHubToUpdater" d="M 740 170 L 740 230" />
+    <path id="pathUpdaterToArgo" d="M 670 270 L 590 270" />
+    <path id="pathArgoToK8s" d="M 450 270 Q 405 270 360 270" />
   </defs>
 
   <style>
-    /* CSS Animation styles supported by GitHub SVG Renderer */
-    @keyframes flowDash {
-      to {
-        stroke-dashoffset: -40;
-      }
-    }
-
-    @keyframes pulseNode {
-      0%, 100% {
-        stroke-width: 1.5px;
-        filter: drop-shadow(0px 0px 2px rgba(0, 240, 255, 0.2));
-      }
-      50% {
-        stroke-width: 2.5px;
-        filter: drop-shadow(0px 0px 8px rgba(0, 240, 255, 0.6));
-      }
-    }
-
-    @keyframes pulseArgo {
-      0%, 100% {
-        stroke-width: 1.5px;
-        filter: drop-shadow(0px 0px 2px rgba(255, 122, 0, 0.2));
-      }
-      50% {
-        stroke-width: 2.5px;
-        filter: drop-shadow(0px 0px 8px rgba(255, 122, 0, 0.6));
-      }
-    }
-
-    /* Base Styles */
-    .bg-card {
+    /* Styling & Keyframes */
+    .bg-canvas {
       fill: url(#bgGrad);
       stroke: #1e293b;
-      stroke-width: 1px;
+      stroke-width: 1.5;
     }
 
-    .connection-line {
+    .glass-card {
+      fill: url(#cardGrad);
+      stroke: #334155;
+      stroke-width: 1.5;
+      filter: url(#shadow);
+      rx: 12;
+    }
+
+    .glass-card-ci {
+      stroke: #00f0ff;
+      stroke-opacity: 0.6;
+    }
+
+    .glass-card-cd {
+      stroke: #ff7a00;
+      stroke-opacity: 0.6;
+    }
+
+    .flow-path {
       fill: none;
-      stroke: #374151;
-      stroke-width: 2;
-      stroke-dasharray: 6 6;
-      animation: flowDash 2s linear infinite;
+      stroke: #1e293b;
+      stroke-width: 3;
+      stroke-linecap: round;
     }
 
-    .ci-flow {
-      stroke: #00f0ff;
-      animation: flowDash 1.2s linear infinite;
+    .flow-path-active-ci {
+      stroke: #0f172a;
+      stroke-width: 3.5;
     }
 
-    .cd-flow {
-      stroke: #ff7a00;
-      animation: flowDash 1s linear infinite;
+    .flow-path-active-cd {
+      stroke: #0f172a;
+      stroke-width: 3.5;
     }
 
-    .node-box {
-      fill: #111827;
-      stroke: #374151;
-      stroke-width: 1.5px;
-      rx: 8;
+    /* Pulse Glow Animations */
+    @keyframes pulseCyan {
+      0%, 100% { stroke-opacity: 0.4; }
+      50% { stroke-opacity: 1; filter: drop-shadow(0 0 4px #00f0ff); }
     }
 
-    .node-active-ci {
-      stroke: #00f0ff;
-      animation: pulseNode 3s infinite ease-in-out;
+    @keyframes pulseOrange {
+      0%, 100% { stroke-opacity: 0.4; }
+      50% { stroke-opacity: 1; filter: drop-shadow(0 0 4px #ff7a00); }
     }
 
-    .node-active-cd {
-      stroke: #ff7a00;
-      animation: pulseArgo 3s infinite ease-in-out;
+    .pulse-ci {
+      animation: pulseCyan 3s infinite ease-in-out;
     }
 
-    .node-title {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      fill: #f3f4f6;
+    .pulse-cd {
+      animation: pulseOrange 3s infinite ease-in-out;
     }
 
-    .node-desc {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    /* Labels & Fonts */
+    .txt-title {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      fill: #f8fafc;
+    }
+
+    .txt-desc {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 11px;
-      fill: #9ca3af;
+      fill: #94a3b8;
     }
 
-    .badge-text {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      font-size: 10px;
-      font-weight: bold;
-      fill: #111827;
+    .txt-step {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 9px;
+      font-weight: 800;
+      fill: #475569;
     }
 
-    .step-num {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      font-size: 10px;
-      font-weight: bold;
-      fill: #9ca3af;
+    .badge-rect {
+      rx: 10;
+    }
+
+    .badge-txt {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      fill: #ffffff;
+      text-anchor: middle;
     }
   </style>
 
   <!-- Background Canvas -->
-  <rect width="100%" height="100%" class="bg-card" rx="12" />
+  <rect width="100%" height="100%" class="bg-canvas" rx="16" />
 
-  <!-- PIPELINE PATHS (Animated Flows) -->
-  
-  <!-- Step 1: Dev to GitHub -->
-  <path d="M 160 200 L 220 200" class="connection-line ci-flow" marker-end="url(#arrowCyan)" />
-  
-  <!-- Step 2: GitHub to GitHub Actions -->
-  <path d="M 360 200 Q 405 130 450 130" class="connection-line ci-flow" marker-end="url(#arrowCyan)" />
-  
-  <!-- Step 3: GHA to DockerHub -->
-  <path d="M 590 130 L 670 130" class="connection-line ci-flow" marker-end="url(#arrowCyan)" />
-  
-  <!-- Step 4: DockerHub to Argo CD Image Updater -->
-  <path d="M 740 170 L 740 230" class="connection-line cd-flow" marker-end="url(#arrowOrange)" />
-  
-  <!-- Step 5: Image Updater to Argo CD Server -->
-  <path d="M 670 270 L 590 270" class="connection-line cd-flow" marker-end="url(#arrowOrange)" />
-  
-  <!-- Step 6: Argo CD Server to Kubernetes Namespace -->
-  <path d="M 450 270 Q 405 270 360 270" class="connection-line cd-flow" marker-end="url(#arrowOrange)" />
+  <!-- PIPELINE BACKBONE PATHS -->
+  <path d="M 160 200 L 220 200" class="flow-path" />
+  <path d="M 360 200 Q 405 130 450 130" class="flow-path" />
+  <path d="M 590 130 L 670 130" class="flow-path" />
+  <path d="M 740 170 L 740 230" class="flow-path" />
+  <path d="M 670 270 L 590 270" class="flow-path" />
+  <path d="M 450 270 Q 405 270 360 270" class="flow-path" />
 
-  <!-- INTERNAL K8S COUPLING -->
-  <!-- App Pods to Headless MongoDB -->
-  <path d="M 290 300 L 290 330" class="connection-line" marker-end="url(#arrow)" />
+  <!-- ANIMATED FLOW GLOWS (Glowing tracks behind particles) -->
+  <path d="M 160 200 L 220 200" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-opacity="0.5" class="pulse-ci" />
+  <path d="M 360 200 Q 405 130 450 130" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-opacity="0.5" class="pulse-ci" />
+  <path d="M 590 130 L 670 130" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-opacity="0.5" class="pulse-ci" />
+  <path d="M 740 170 L 740 230" fill="none" stroke="#ff7a00" stroke-width="1.5" stroke-opacity="0.5" class="pulse-cd" />
+  <path d="M 670 270 L 590 270" fill="none" stroke="#ff7a00" stroke-width="1.5" stroke-opacity="0.5" class="pulse-cd" />
+  <path d="M 450 270 Q 405 270 360 270" fill="none" stroke="#ff7a00" stroke-width="1.5" stroke-opacity="0.5" class="pulse-cd" />
 
-  <!-- NODES (COMPONENTS) -->
+  <!-- DYNAMIC GLOWING PARTICLES (Smoothly slide along paths) -->
+  <!-- Cyan CI Particles -->
+  <circle r="4" fill="#00f0ff" filter="url(#cyanGlow)">
+    <animateMotion dur="2s" repeatCount="indefinite" rotate="auto">
+      <mpath href="#pathDevToGit" />
+    </animateMotion>
+  </circle>
 
-  <!-- NODE 1: Developer Workstation -->
+  <circle r="4" fill="#00f0ff" filter="url(#cyanGlow)">
+    <animateMotion dur="2.5s" repeatCount="indefinite" rotate="auto">
+      <mpath href="#pathGitToGha" />
+    </animateMotion>
+  </circle>
+
+  <circle r="4" fill="#00f0ff" filter="url(#cyanGlow)">
+    <animateMotion dur="2s" repeatCount="indefinite" rotate="auto">
+      <mpath href="#pathGhaToHub" />
+    </animateMotion>
+  </circle>
+
+  <!-- Orange CD Particles -->
+  <circle r="4" fill="#ff7a00" filter="url(#orangeGlow)">
+    <animateMotion dur="2s" repeatCount="indefinite" rotate="auto">
+      <mpath href="#pathHubToUpdater" />
+    </animateMotion>
+  </circle>
+
+  <circle r="4" fill="#ff7a00" filter="url(#orangeGlow)">
+    <animateMotion dur="2s" repeatCount="indefinite" rotate="auto">
+      <mpath href="#pathUpdaterToArgo" />
+    </animateMotion>
+  </circle>
+
+  <circle r="4" fill="#ff7a00" filter="url(#orangeGlow)">
+    <animateMotion dur="2.5s" repeatCount="indefinite" rotate="auto">
+      <mpath href="#pathArgoToK8s" />
+    </animateMotion>
+  </circle>
+
+
+  <!-- MODULE CARDS -->
+
+  <!-- Card 1: Developer -->
   <g transform="translate(20, 160)">
-    <rect width="140" height="80" class="node-box" />
-    <circle cx="25" cy="25" r="12" fill="#1f2937" />
-    <path d="M 21 21 L 29 29 M 29 21 L 21 29" stroke="#9ca3af" stroke-width="2" />
-    <text x="50" y="28" class="node-title">Developer</text>
-    <text x="15" y="52" class="node-desc">Local Workstation</text>
-    <text x="15" y="67" class="node-desc">Code Push (Git)</text>
-    <text x="125" y="18" class="step-num">01</text>
+    <rect width="140" height="80" class="glass-card" />
+    <rect x="0" y="0" width="140" height="4" fill="#475569" rx="2" />
+    <circle cx="25" cy="30" r="10" fill="#1e293b" />
+    <!-- Laptop Icon -->
+    <path d="M 20 33 L 30 33 M 22 27 L 28 27 L 27 31 L 23 31 Z" stroke="#94a3b8" stroke-width="1.2" fill="none" />
+    <text x="45" y="34" class="txt-title">Developer</text>
+    <text x="15" y="56" class="txt-desc">Commit code</text>
+    <text x="15" y="69" class="txt-desc">Push to main</text>
+    <text x="122" y="16" class="txt-step">01</text>
   </g>
 
-  <!-- NODE 2: GitHub Repository -->
+  <!-- Card 2: GitHub Repository -->
   <g transform="translate(220, 160)">
-    <rect width="140" height="80" class="node-box node-active-ci" />
-    <circle cx="25" cy="25" r="12" fill="#00f0ff" fill-opacity="0.1" />
-    <circle cx="25" cy="25" r="6" fill="#00f0ff" />
-    <text x="50" y="28" class="node-title">GitHub Repo</text>
-    <text x="15" y="52" class="node-desc">Git Repository</text>
-    <text x="15" y="67" class="node-desc">Trigger Webhook</text>
-    <text x="125" y="18" class="step-num">02</text>
+    <rect width="140" height="80" class="glass-card glass-card-ci" />
+    <rect x="0" y="0" width="140" height="4" fill="url(#activeCiGrad)" rx="2" />
+    <circle cx="25" cy="30" r="10" fill="#00f0ff" fill-opacity="0.1" />
+    <!-- Branch Icon -->
+    <path d="M 25 24 L 25 36 M 25 28 C 29 28 29 32 29 32" stroke="#00f0ff" stroke-width="1.5" fill="none" />
+    <circle cx="25" cy="24" r="2" fill="#00f0ff" />
+    <circle cx="25" cy="36" r="2" fill="#00f0ff" />
+    <circle cx="29" cy="32" r="2" fill="#00f0ff" />
+    <text x="45" y="34" class="txt-title">GitHub Repo</text>
+    <text x="15" y="56" class="txt-desc">Git Repository</text>
+    <text x="15" y="69" class="txt-desc">Webhook trigger</text>
+    <text x="122" y="16" class="txt-step">02</text>
   </g>
 
-  <!-- NODE 3: GitHub Actions (CI) -->
+  <!-- Card 3: GitHub Actions -->
   <g transform="translate(450, 90)">
-    <rect width="140" height="80" class="node-box node-active-ci" />
-    <circle cx="25" cy="25" r="12" fill="#00f0ff" fill-opacity="0.1" />
-    <path d="M 20 25 L 23 28 L 30 20" fill="none" stroke="#00f0ff" stroke-width="2" />
-    <text x="50" y="28" class="node-title">GitHub Actions</text>
-    <text x="15" y="52" class="node-desc">Docker Build / Test</text>
-    <text x="15" y="67" class="node-desc">Tag &amp; Push Image</text>
-    <text x="125" y="18" class="step-num">03</text>
+    <rect width="140" height="80" class="glass-card glass-card-ci" />
+    <rect x="0" y="0" width="140" height="4" fill="url(#activeCiGrad)" rx="2" />
+    <circle cx="25" cy="30" r="10" fill="#00f0ff" fill-opacity="0.1" />
+    <!-- Gear/Play Icon -->
+    <path d="M 22 26 L 30 30 L 22 34 Z" fill="#00f0ff" />
+    <text x="45" y="34" class="txt-title">CI Pipeline</text>
+    <text x="15" y="56" class="txt-desc">Docker build</text>
+    <text x="15" y="69" class="txt-desc">Push tag to Registry</text>
+    <text x="122" y="16" class="txt-step">03</text>
   </g>
 
-  <!-- NODE 4: Docker Hub Registry -->
+  <!-- Card 4: Docker Hub -->
   <g transform="translate(670, 90)">
-    <rect width="140" height="80" class="node-box" />
-    <circle cx="25" cy="25" r="12" fill="#1f2937" />
-    <rect x="20" y="20" width="10" height="10" fill="#3b82f6" rx="2" />
-    <text x="50" y="28" class="node-title">Docker Hub</text>
-    <text x="15" y="52" class="node-desc">Image Registry</text>
-    <text x="15" y="67" class="node-desc">Docker Registries</text>
-    <text x="125" y="18" class="step-num">04</text>
+    <rect width="140" height="80" class="glass-card" />
+    <rect x="0" y="0" width="140" height="4" fill="#475569" rx="2" />
+    <circle cx="25" cy="30" r="10" fill="#1e293b" />
+    <!-- Docker box icon -->
+    <rect x="20" y="26" width="10" height="8" fill="none" stroke="#94a3b8" stroke-width="1.2" />
+    <line x1="25" y1="26" x2="25" y2="34" stroke="#94a3b8" stroke-width="1" />
+    <text x="45" y="34" class="txt-title">Docker Hub</text>
+    <text x="15" y="56" class="txt-desc">Registry storage</text>
+    <text x="15" y="69" class="txt-desc">Holds image tags</text>
+    <text x="122" y="16" class="txt-step">04</text>
   </g>
 
-  <!-- NODE 5: Argo CD Image Updater -->
+  <!-- Card 5: Argo CD Image Updater -->
   <g transform="translate(670, 230)">
-    <rect width="140" height="80" class="node-box node-active-cd" />
-    <circle cx="25" cy="25" r="12" fill="#ff7a00" fill-opacity="0.1" />
-    <path d="M 25 18 L 29 25 L 21 25 Z" fill="#ff7a00" />
-    <path d="M 25 32 L 29 25 L 21 25 Z" fill="#ff7a00" />
-    <text x="50" y="28" class="node-title">Image Updater</text>
-    <text x="15" y="52" class="node-desc">Monitors DockerHub</text>
-    <text x="15" y="67" class="node-desc">Auto Git Write-Back</text>
-    <text x="125" y="18" class="step-num">05</text>
+    <rect width="140" height="80" class="glass-card glass-card-cd" />
+    <rect x="0" y="0" width="140" height="4" fill="url(#activeCdGrad)" rx="2" />
+    <circle cx="25" cy="30" r="10" fill="#ff7a00" fill-opacity="0.1" />
+    <!-- Loop/Arrow Icon -->
+    <path d="M 21 30 A 4 4 0 1 1 29 30" stroke="#ff7a00" stroke-width="1.5" fill="none" />
+    <path d="M 28 26 L 31 29 L 28 32 Z" fill="#ff7a00" />
+    <text x="45" y="34" class="txt-title">Image Updater</text>
+    <text x="15" y="56" class="txt-desc">Auto checks tags</text>
+    <text x="15" y="69" class="txt-desc">Git write-back</text>
+    <text x="122" y="16" class="txt-step">05</text>
   </g>
 
-  <!-- NODE 6: Argo CD Server -->
+  <!-- Card 6: Argo CD Server -->
   <g transform="translate(450, 230)">
-    <rect width="140" height="80" class="node-box node-active-cd" />
-    <circle cx="25" cy="25" r="12" fill="#ff7a00" fill-opacity="0.1" />
-    <circle cx="25" cy="25" r="6" fill="#ff7a00" />
-    <text x="50" y="28" class="node-title">Argo CD Server</text>
-    <text x="15" y="52" class="node-desc">State Reconciliation</text>
-    <text x="15" y="67" class="node-desc">GitOps Controller</text>
-    <text x="125" y="18" class="step-num">06</text>
+    <rect width="140" height="80" class="glass-card glass-card-cd" />
+    <rect x="0" y="0" width="140" height="4" fill="url(#activeCdGrad)" rx="2" />
+    <circle cx="25" cy="30" r="10" fill="#ff7a00" fill-opacity="0.1" />
+    <!-- Ship steering icon -->
+    <circle cx="25" cy="30" r="5" fill="none" stroke="#ff7a00" stroke-width="1.5" />
+    <path d="M 25 22 L 25 38 M 17 30 L 33 30" stroke="#ff7a00" stroke-width="1" />
+    <text x="45" y="34" class="txt-title">Argo CD</text>
+    <text x="15" y="56" class="txt-desc">State sync</text>
+    <text x="15" y="69" class="txt-desc">Deploy manifests</text>
+    <text x="122" y="16" class="txt-step">06</text>
   </g>
 
-  <!-- NODE 7: Target Kubernetes Cluster (shopping-app Namespace) -->
-  <g transform="translate(220, 250)">
-    <!-- Outer Box representing Cluster/Namespace -->
-    <rect width="140" height="130" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" rx="8" />
-    <rect x="5" y="5" width="130" height="20" fill="#1e293b" rx="4" />
-    <text x="12" y="18" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" font-weight="bold" fill="#38bdf8">K8S: shopping-app</text>
+  <!-- Kubernetes Cluster Container Card -->
+  <g transform="translate(220, 252)">
+    <rect width="140" height="152" fill="#0b0f19" stroke="#334155" stroke-width="1.5" rx="12" filter="url(#shadow)" />
+    <rect x="0" y="0" width="140" height="24" fill="#1e293b" rx="6" />
+    <!-- Mini K8s Logo -->
+    <polygon points="15,12 21,7 27,12 25,18 17,18" fill="none" stroke="#38bdf8" stroke-width="1" />
+    <text x="35" y="16" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="10" fill="#38bdf8">K8S Cluster</text>
 
     <!-- Node.js App Pod -->
-    <g transform="translate(10, 32)">
-      <rect width="120" height="40" fill="#111827" stroke="#38bdf8" stroke-width="1" rx="4" />
-      <text x="10" y="18" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" font-weight="bold" fill="#f3f4f6">Web Application</text>
-      <text x="10" y="30" font-family="'Segoe UI', system-ui, sans-serif" font-size="9" fill="#9ca3af">4 Pods | NodePort 30080</text>
+    <g transform="translate(10, 36)">
+      <rect width="120" height="48" fill="#0f172a" stroke="#38bdf8" stroke-width="1" rx="6" />
+      <text x="10" y="18" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="10" fill="#f8fafc">Web App Pods</text>
+      <text x="10" y="30" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#94a3b8">4 Replicas</text>
+      <text x="10" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#00f0ff">NodePort: 30080</text>
     </g>
 
-    <!-- Headless MongoDB StatefulSet -->
-    <g transform="translate(10, 80)">
-      <rect width="120" height="40" fill="#111827" stroke="#10b981" stroke-width="1" rx="4" />
-      <text x="10" y="18" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" font-weight="bold" fill="#f3f4f6">MongoDB StatefulSet</text>
-      <text x="10" y="30" font-family="'Segoe UI', system-ui, sans-serif" font-size="9" fill="#9ca3af">mongo-0 | local-path SC</text>
+    <!-- MongoDB StatefulSet -->
+    <g transform="translate(10, 94)">
+      <rect width="120" height="48" fill="#0f172a" stroke="#10b981" stroke-width="1" rx="6" />
+      <text x="10" y="18" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="10" fill="#f8fafc">Mongo DB</text>
+      <text x="10" y="30" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#94a3b8">StatefulSet (mongo-0)</text>
+      <text x="10" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#10b981">Sync Wave 1</text>
     </g>
-    <text x="125" y="20" class="step-num">07</text>
+    <text x="122" y="16" class="txt-step">07</text>
   </g>
 
-  <!-- FLOW LABELS (STAGE INFO) -->
-  <g transform="translate(380, 50)">
-    <rect width="120" height="24" fill="#0284c7" rx="12" />
-    <text x="60" y="16" class="badge-text" fill="#ffffff" text-anchor="middle">CONTINUOUS INTEGRATION</text>
+  <!-- Active Inner K8s Flow -->
+  <path d="M 290 336 L 290 346" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="3 3" />
+  <circle r="3" fill="#10b981" filter="url(#cyanGlow)">
+    <animateMotion dur="1.5s" repeatCount="indefinite">
+      <mpath d="M 290 336 L 290 346" />
+    </animateMotion>
+  </circle>
+
+
+  <!-- SECTION BADGES -->
+  <g transform="translate(370, 40)">
+    <rect width="160" height="24" class="badge-rect" fill="#0284c7" />
+    <text x="80" y="15" class="badge-txt">CONTINUOUS INTEGRATION</text>
   </g>
 
-  <g transform="translate(380, 345)">
-    <rect width="120" height="24" fill="#ea580c" rx="12" />
-    <text x="60" y="16" class="badge-text" fill="#ffffff" text-anchor="middle">CONTINUOUS DELIVERY</text>
+  <g transform="translate(370, 370)">
+    <rect width="160" height="24" class="badge-rect" fill="#ea580c" />
+    <text x="80" y="15" class="badge-txt">CONTINUOUS DELIVERY</text>
   </g>
 </svg>
