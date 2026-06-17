@@ -26,7 +26,7 @@ The application is architected as a highly available, containerized **2-Tier Mon
 
 The deployment state is managed entirely through Git. Whenever a change is committed, the following automated pipeline executes:
 
-![GitOps Workflow Diagram](screenshots/gitops-workflow.gif)
+![GitOps Workflow Diagram](screenshots/gitops-workflow.png)
 
 ---
 
