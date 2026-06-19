@@ -122,7 +122,7 @@ Here is a visual overview of the operational frontend interface:
 
 | Signup | Login |
 |---|---|
-| ![Signup](https://i.imgur.com/ugZY2Dr.png) | ![Login](https://i.imgur.com/OWAsmFf.png) |
+|<img width="1919" height="923" alt="Screenshot 2026-06-19 183740" src="https://github.com/user-attachments/assets/08b19773-cbc4-4733-86bc-30db55224a44" />| ![Login](https://i.imgur.com/OWAsmFf.png) |
 
 | Shopping List Catalog | Responsive UI View |
 |---|---|
