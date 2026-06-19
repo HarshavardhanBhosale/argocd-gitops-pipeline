@@ -56,4 +56,5 @@ spec:
                   name: mongodb-app-config
                   key: MONGO_DB
             - name: MONGODB_URI
-              value: "mongodb://$(MONGO_USER):$(MONGO_PWD)@$(MONGO_HOST):$(MONGO_PORT)/$(MONGO_DB)?authSource=$(MONGO_DB)"
+              # Fixed String Structure: Removed extra port suffix and forced administrative authentication routing parameters
+              value: "mongodb://\$(MONGO_USER):\$(MONGO_PWD)@\$(MONGO_HOST)/\$(MONGO_DB)?replicaSet=rs0&authSource=admin"
