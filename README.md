@@ -114,6 +114,17 @@ metadata:
     argocd-image-updater.argoproj.io/my-app.update-strategy: latest
 ```
 
+#### 3. Argo CD Application Live Synchronization Status
+Below is the status of the `argo-shopping-app` dashboard in Argo CD. The application is marked as **Synced** and **Healthy**, deploying the configured Kubernetes resources (Services, Deployment replicas, Configuration Maps, Secrets, and StatefulSet structures) seamlessly to the cluster:
+
+##### Argo CD Applications Dashboard:
+![ArgoCD Application Tile Status](screenshots/argocd-tiles.png)
+
+##### Resource Sync Tree Details:
+| Application Resources & Sync Status | StatefulSet & PV Deployment Tree |
+|---|---|
+| ![ArgoCD App Details Tree](screenshots/argocd-sync-1.png) | ![ArgoCD Resource Deployment Tree](screenshots/argocd-sync-2.png) |
+
 ---
 
 ## 5. Application Features Gallery
