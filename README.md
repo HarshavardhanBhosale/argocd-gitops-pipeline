@@ -114,6 +114,11 @@ metadata:
     argocd-image-updater.argoproj.io/my-app.update-strategy: latest
 ```
 
+##### Automated Image Release and Commit Synchronization:
+Below is the live verification showing how Git commits pushed to the repository are built, tagged with the matching commit SHA, and pushed to Docker Hub by the CI pipeline, allowing the Argo CD Image Updater to dynamically target and deploy the latest built artifacts:
+
+![Argo CD Image Updater Commit and Tag Matching](screenshots/argocd-image-updater.png)
+
 #### 3. Argo CD Application Live Synchronization Status
 Below is the status of the `argo-shopping-app` dashboard in Argo CD. The application is marked as **Synced** and **Healthy**, deploying the configured Kubernetes resources (Services, Deployment replicas, Configuration Maps, Secrets, and StatefulSet structures) seamlessly to the cluster:
 
