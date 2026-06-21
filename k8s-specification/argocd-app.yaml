@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: shopping-app
+  namespace: argocd
+  annotations:
+
+    argocd-image-updater.argoproj.io/image-list: shopping=harshavardhan88/nodejs-cicd-shopping
+
+    argocd-image-updater.argoproj.io/shopping.update-strategy: latest
+
+    argocd-image-updater.argoproj.io/write-back-method: git:kustomize
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/HarshavardhanBhosale/argocd-gitops-pipeline.git'
+    targetRevision: HEAD
+    path: k8s-specification
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: shopping-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
