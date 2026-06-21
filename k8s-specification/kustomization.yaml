@@ -3,10 +3,11 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
+  - local-storageclass.yaml
   - mongo-configmap.yaml
+  - mongo-headless-svc.yaml
   - mongo-secret.yaml
-  - deployment-configmap.yaml
-  - mongo-service.yaml
   - mongo-statefullset.yaml
-  - deployment.yaml
-  - service.yaml
+  - shop-configmap.yaml
+  - shop-deployment.yaml
+  - shop-service.yaml
