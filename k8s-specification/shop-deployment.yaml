@@ -23,7 +23,7 @@ spec:
           command:
             - sh
             - -c
-            - "until nc -zvw1 mongo.shopping-app.svc.cluster.local 27017; do echo waiting for mongodb; sleep 2; done;"
+            - "until nc -w 2 mongo 27017; do echo waiting for mongodb; sleep 2; done;"
       containers:
         - name: shopping-container
           image: harshavardhan88/nodejs-cicd-shopping:28f473fb182b6cf82863d9f44317f277c8fad01e
