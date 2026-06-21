@@ -10,24 +10,12 @@ spec:
     matchLabels:
       app: myshop
   serviceName: "mongo"
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:
         app: myshop
     spec:
-      initContainers:
-        - name: init-mongo-keyfile
-          image: busybox
-          command:
-            - sh
-            - -c
-            - "cp /tmp/keyfile /etc/mongo-keyfile/keyfile && chmod 400 /etc/mongo-keyfile/keyfile && chown 999:999 /etc/mongo-keyfile/keyfile"
-          volumeMounts:
-            - name: raw-keyfile
-              mountPath: /tmp
-            - name: mongo-keyfile
-              mountPath: /etc/mongo-keyfile
       containers:
         - name: mongo
           image: mongo:latest
@@ -47,15 +35,12 @@ spec:
           command:
             - mongod
             - "--bind_ip_all"
-            - "--config=/etc/mongo/mongodb.conf"
-            - "--keyFile=/etc/mongo-keyfile/keyfile" 
+            - --config=/etc/mongo/mongodb.conf
           volumeMounts:
             - name: mongo-volume
               mountPath: /data/db
             - name: mongodb-config
               mountPath: /etc/mongo
-            - name: mongo-keyfile
-              mountPath: /etc/mongo-keyfile
       volumes:
         - name: mongodb-config
           configMap:
@@ -63,11 +48,6 @@ spec:
             items:
               - key: mongodb.conf
                 path: mongodb.conf
-        - name: raw-keyfile
-          secret:
-            secretName: mongodb-keyfile-secret
-        - name: mongo-keyfile
-          emptyDir: {}
   volumeClaimTemplates:
     - metadata:
         name: mongo-volume
@@ -77,4 +57,3 @@ spec:
         resources:
           requests:
             storage: 1Gi
-
